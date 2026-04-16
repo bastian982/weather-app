@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App de Clima</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="weather-card">
+      <header class="weather-header">
+        <div>
+          <h1>Clima</h1>
+          <p>Busca una ciudad y un país para ver el clima actual.</p>
+        </div>
+      </header>
+
+      <form id="searchForm" class="search-pane">
+        <label class="input-group">
+          <span>Ciudad</span>
+          <input id="cityInput" type="text" placeholder="Ej. Madrid" autocomplete="off" />
+        </label>
+        <label class="input-group">
+          <span>País</span>
+          <input id="countryInput" type="text" placeholder="Ej. España" autocomplete="off" />
+        </label>
+        <button id="searchButton" type="submit">Buscar</button>
+      </form>
+
+      <div id="weatherContainer" class="weather-container hidden">
+        <div class="weather-summary">
+          <div>
+            <h2 id="locationName">Ciudad, País</h2>
+            <p id="weatherDescription">Condición actual</p>
+          </div>
+          <div class="weather-icon">
+            <i id="weatherIcon" class="fas fa-sun"></i>
+          </div>
+        </div>
+
+        <div class="weather-temperature">
+          <div>
+            <strong id="temperatureC">--</strong>
+            <span>°C</span>
+          </div>
+          <div>
+            <strong id="temperatureF">--</strong>
+            <span>°F</span>
+          </div>
+        </div>
+
+        <div class="weather-details">
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="fas fa-droplet"></i>
+            </div>
+            <span>Humedad</span>
+            <strong id="humidity">--</strong>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="fas fa-wind"></i>
+            </div>
+            <span>Viento</span>
+            <strong id="windSpeed">--</strong>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <span>Hora local</span>
+            <strong id="localTime">--</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pronóstico de 5 días -->
+      <div id="forecastContainer" class="forecast-container hidden">
+        <h3>Pronóstico 5 días</h3>
+        <div id="forecastGrid" class="forecast-grid">
+          <!-- Los días del pronóstico se agregarán aquí dinámicamente -->
+        </div>
+      </div>
+
+      <div id="errorMessage" class="error-message hidden"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
