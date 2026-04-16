@@ -11,24 +11,34 @@
 <body>
   <main class="app-shell">
     <section class="weather-card">
-      <header class="weather-header">
-        <div>
-          <h1>Clima</h1>
-          <p>Busca una ciudad y un país para ver el clima actual.</p>
-        </div>
-      </header>
+      <div id="searchScreen">
+        <header class="weather-header">
+          <div>
+            <h1>Clima</h1>
+            <p>Busca una ciudad y un país para ver el clima actual.</p>
+          </div>
+        </header>
 
-      <form id="searchForm" class="search-pane">
-        <label class="input-group">
-          <span>Ciudad</span>
-          <input id="cityInput" type="text" placeholder="Ej. Madrid" autocomplete="off" />
-        </label>
-        <label class="input-group">
-          <span>País</span>
-          <input id="countryInput" type="text" placeholder="Ej. España" autocomplete="off" />
-        </label>
-        <button id="searchButton" type="submit">Buscar</button>
-      </form>
+        <form id="searchForm" class="search-pane">
+          <label class="input-group">
+            <span>Ciudad</span>
+            <input id="cityInput" type="text" placeholder="Ej. Madrid" autocomplete="off" />
+          </label>
+          <label class="input-group">
+            <span>País</span>
+            <input id="countryInput" type="text" placeholder="Ej. España" autocomplete="off" />
+          </label>
+          <button id="searchButton" type="submit">Buscar</button>
+        </form>
+
+        <div id="historyPanel" class="history-panel hidden">
+          <div class="history-header">
+            <h3>Historial de búsquedas</h3>
+            <button id="clearHistoryButton" type="button" class="secondary-button">Eliminar historial</button>
+          </div>
+          <ul id="historyList" class="history-list"></ul>
+        </div>
+      </div>
 
       <div id="weatherContainer" class="weather-container hidden">
         <div class="weather-summary">
@@ -74,6 +84,11 @@
             <span>Hora local</span>
             <strong id="localTime">--</strong>
           </div>
+        </div>
+
+        <div class="weather-actions">
+          <button id="toggleForecastButton" type="button" class="action-button">Ver pronóstico 5 días</button>
+          <button id="backButton" type="button" class="secondary-button">Volver a buscar</button>
         </div>
       </div>
 

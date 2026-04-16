@@ -530,6 +530,190 @@ function hideWeatherForecast() {
   forecastGrid.innerHTML = '';
 }
 
+let currentLocation = null;
+let currentForecast = null;
+let isForecastVisible = false;
+let isForecastLoading = false;
+
+const HISTORY_STORAGE_KEY = 'weather_search_history';
+
+function resetForecastState() {
+  currentForecast = null;
+  isForecastVisible = false;
+  isForecastLoading = false;
+  if (toggleForecastButton) {
+    toggleForecastButton.textContent = 'Ver pronóstico 5 días';
+    toggleForecastButton.disabled = false;
+  }
+}
+
+function loadSearchHistory() {
+  if (!hasLocalStorage()) {
+    return [];
+  }
+
+  try {
+    const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (error) {
+    console.warn('Error cargando historial de búsqueda:', error);
+    return [];
+  }
+}
+
+function saveSearchHistory(history) {
+  if (!hasLocalStorage()) {
+    return;
+  }
+
+  try {
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+  } catch (error) {
+    console.warn('Error guardando historial de búsqueda:', error);
+  }
+}
+
+function addSearchToHistory(location) {
+  if (!location?.name || !location?.country) {
+    return;
+  }
+
+  const entry = {
+    city: location.name,
+    country: location.country,
+    timestamp: Date.now(),
+  };
+
+  const history = loadSearchHistory();
+  const existingIndex = history.findIndex(item =>
+    item.city.toLowerCase() === entry.city.toLowerCase() &&
+    item.country.toLowerCase() === entry.country.toLowerCase()
+  );
+
+  if (existingIndex !== -1) {
+    history.splice(existingIndex, 1);
+  }
+
+  history.unshift(entry);
+  if (history.length > 10) {
+    history.splice(10);
+  }
+
+  saveSearchHistory(history);
+  renderSearchHistory();
+}
+
+function clearSearchHistory() {
+  if (!hasLocalStorage()) {
+    return;
+  }
+
+  localStorage.removeItem(HISTORY_STORAGE_KEY);
+  renderSearchHistory();
+}
+
+function renderSearchHistory() {
+  const historyPanel = document.getElementById('historyPanel');
+  const historyList = document.getElementById('historyList');
+  const clearHistoryButton = document.getElementById('clearHistoryButton');
+  const history = loadSearchHistory();
+
+  if (!historyPanel || !historyList || !clearHistoryButton) {
+    return;
+  }
+
+  if (!history.length) {
+    historyPanel.classList.add('hidden');
+    historyList.innerHTML = '';
+    clearHistoryButton.classList.add('hidden');
+    return;
+  }
+
+  historyPanel.classList.remove('hidden');
+  clearHistoryButton.classList.remove('hidden');
+  historyList.innerHTML = '';
+
+  history.forEach((item) => {
+    const listItem = document.createElement('li');
+    listItem.className = 'history-item';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'history-entry';
+    button.innerHTML = `<span>${item.city}, ${item.country}</span>`;
+    button.addEventListener('click', () => {
+      if (cityInput && countryInput) {
+        cityInput.value = item.city;
+        countryInput.value = item.country;
+      }
+      searchForm.requestSubmit();
+    });
+
+    listItem.appendChild(button);
+    historyList.appendChild(listItem);
+  });
+}
+
+async function handleToggleForecast() {
+  if (!currentLocation || !toggleForecastButton) {
+    return;
+  }
+
+  if (isForecastVisible) {
+    hideWeatherForecast();
+    isForecastVisible = false;
+    toggleForecastButton.textContent = 'Ver pronóstico 5 días';
+    return;
+  }
+
+  if (isForecastLoading) {
+    return;
+  }
+
+  if (currentForecast) {
+    displayWeatherForecast(currentForecast);
+    isForecastVisible = true;
+    toggleForecastButton.textContent = 'Ocultar pronóstico 5 días';
+    return;
+  }
+
+  isForecastLoading = true;
+  toggleForecastButton.disabled = true;
+  toggleForecastButton.textContent = 'Cargando pronóstico...';
+
+  try {
+    const forecast = await fetchWeatherForecast(currentLocation);
+    currentForecast = forecast;
+
+    displayWeatherForecast(forecast);
+    isForecastVisible = true;
+    toggleForecastButton.textContent = 'Ocultar pronóstico 5 días';
+  } catch (error) {
+    showError(error.message);
+  } finally {
+    isForecastLoading = false;
+    if (toggleForecastButton) {
+      toggleForecastButton.disabled = false;
+    }
+  }
+}
+
+function handleBackToSearch() {
+  resetDisplay();
+  currentLocation = null;
+  resetForecastState();
+
+  if (searchScreen) {
+    searchScreen.classList.remove('hidden');
+  }
+
+  if (cityInput) {
+    cityInput.focus();
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 // ============================================
 // ELEMENTOS DEL DOM
 // ============================================
@@ -537,6 +721,7 @@ function hideWeatherForecast() {
 const searchForm = document.getElementById('searchForm');
 const cityInput = document.getElementById('cityInput');
 const countryInput = document.getElementById('countryInput');
+const searchScreen = document.getElementById('searchScreen');
 const weatherContainer = document.getElementById('weatherContainer');
 const forecastContainer = document.getElementById('forecastContainer');
 const forecastGrid = document.getElementById('forecastGrid');
@@ -549,6 +734,23 @@ const temperatureF = document.getElementById('temperatureF');
 const humidity = document.getElementById('humidity');
 const windSpeed = document.getElementById('windSpeed');
 const localTime = document.getElementById('localTime');
+const toggleForecastButton = document.getElementById('toggleForecastButton');
+const backButton = document.getElementById('backButton');
+
+if (toggleForecastButton) {
+  toggleForecastButton.addEventListener('click', handleToggleForecast);
+}
+
+if (backButton) {
+  backButton.addEventListener('click', handleBackToSearch);
+}
+
+const clearHistoryButton = document.getElementById('clearHistoryButton');
+if (clearHistoryButton) {
+  clearHistoryButton.addEventListener('click', clearSearchHistory);
+}
+
+renderSearchHistory();
 
 searchForm.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -562,21 +764,23 @@ searchForm.addEventListener('submit', async (event) => {
   }
 
   resetDisplay();
+  resetForecastState();
 
   try {
     // Buscar ubicación
     const location = await searchLocation(city, country);
+    currentLocation = location;
 
-    // Obtener clima actual y pronóstico en paralelo
-    const [weather, forecast] = await Promise.all([
-      fetchWeather(location),
-      fetchWeatherForecast(location)
-    ]);
+    // Obtener sólo el clima actual para evitar scroll adicional inmediato
+    const weather = await fetchWeather(location);
 
     // Mostrar resultados
     displayWeather(location, weather);
-    displayWeatherForecast(forecast);
+    addSearchToHistory(location);
 
+    if (searchScreen) {
+      searchScreen.classList.add('hidden');
+    }
   } catch (error) {
     showError(error.message);
   }

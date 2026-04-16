@@ -22,7 +22,9 @@ Una aplicación web moderna y responsiva que permite consultar el clima actual d
 ✅ **Sin dependencias externas** — JavaScript puro, sin frameworks  
 ✅ **Sin autenticación** — Usa API pública de Open-Meteo (sin API key requerida)  
 ✅ **Sistema de caché** — Almacena resultados por 1 hora para mejor rendimiento  
-✅ **Pronóstico 5 días** — Muestra previsión meteorológica para los próximos 5 días
+✅ **Pronóstico 5 días** — Muestra previsión meteorológica para los próximos 5 días  
+✅ **Historial de búsqueda** — Guarda las últimas búsquedas y permite volver a consultarlas fácilmente  
+✅ **Eliminar historial** — Limpia el historial con un botón directo
 
 ## 🎨 Características de Diseño
 
