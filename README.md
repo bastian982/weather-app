@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Aplicación del Clima 🌤️
 
 Una aplicación web moderna y responsiva que permite consultar el clima actual de cualquier ciudad del mundo utilizando la API gratuita de [Open-Meteo](https://open-meteo.com/).
@@ -429,3 +430,7 @@ Si encuentras problemas o tienes sugerencias:
 **Última actualización:** Abril 2026  
 **Versión:** 1.1.0  
 **Estado:** Producción ✅
+=======
+# weather-app
+Weather App is a lightweight app built with Vanilla HTML, CSS, and JavaScript that fetches current weather and a 5-day forecast from the public Open-Meteo API. It supports city + country search, result validation, intelligent local caching, and a modern responsive UI.
+>>>>>>> d1d9e77d3ec2933a29f71c9e5895bdcb8fde66d4
